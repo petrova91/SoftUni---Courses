@@ -15,32 +15,26 @@ robots_process_time = {}
 hours, minutes, seconds = input().split(":")
 time_in_seconds = int(hours) * 3600 + int(minutes) * 60 + int(seconds)
 timer = time_in_seconds
+
 product = input()
 products = deque()
 while not product == "End":
     products.append(product)
     product = input()
+
+while sequence_of_robots:
+    robot = sequence_of_robots.popleft()
+    robot_name, process_time = robot.split("-")
+    robots_in_process[robot_name] = 0
+    robots_process_time[robot_name] = int(process_time)
+
 while products:
     timer += 1
     current_product = products.popleft()
-    if robots_in_process:
-        for robot in robots_in_process:
-            robots_in_process[robot] -= 1
-    if sequence_of_robots:
-        robot = sequence_of_robots.popleft()
-        robot_name, process_time = robot.split("-")
-        robots_in_process[robot_name] = int(process_time)
-        robots_process_time[robot_name] = int(process_time)
-        printed_message(timer, current_product, robot_name)
+    for robot, time in robots_in_process.items():
+        if timer >= time:
+            printed_message(timer, current_product, robot)
+            robots_in_process[robot] = robots_process_time[robot] + timer
+            break
     else:
-        for robot in robots_in_process:
-            if robots_in_process[robot] <= 0:
-                printed_message(timer, current_product, robot)
-                robots_in_process[robot] = robots_process_time[robot]
-                break
-        else:
-            products.append(current_product)
-
-
-
-
+        products.append(current_product)
